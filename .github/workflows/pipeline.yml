@@ -1,0 +1,26 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: HTML lint
+        run: npx --yes htmlhint index.html
+      - name: Build image
+        run: docker build -t test-image .
+      - name: Smoke test container
+        run: |
+          docker run -d --name smoke -p 8080:80 test-image
+          sleep 2
+          curl -fsS http://localhost:8080 | grep -q "Кофанов Иван Игоревич" || (echo "grep failed"; exit 1)
+          docker stop smoke
