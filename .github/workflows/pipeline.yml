@@ -39,6 +39,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]'):latest
+          IMAGE=ghcr.io/ivashkaikofanov-star/ci-cd-lab:latest
           docker build -t $IMAGE .
           docker push $IMAGE
