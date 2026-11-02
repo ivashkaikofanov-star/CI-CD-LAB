@@ -24,3 +24,21 @@ jobs:
           sleep 2
           curl -fsS http://localhost:8080 | grep -q "Кофанов Иван Игоревич" || (echo "grep failed"; exit 1)
           docker stop smoke
+
+  release:
+    needs: ci
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]'):latest
+          docker build -t $IMAGE .
+          docker push $IMAGE
