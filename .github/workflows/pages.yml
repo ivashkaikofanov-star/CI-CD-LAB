@@ -1,0 +1,4 @@
+name: Pages
+
+on:
+  workflow_dispatch:
